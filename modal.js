@@ -16,17 +16,18 @@ const closeModal=document.querySelector('.close')
 const content=document.querySelector('.content')
 const bground=document.querySelector('.bground')
 const modalBody=document.querySelector('.modal-body')
+const input = document.querySelector('input')
 
 //Retrieve the "location" input which is checked (if there is one)
 const locationInputs = document.querySelectorAll('input[name="location"]');
 console.log(locationInputs)
 
 // listen to the event on the radio-type input checkbox
-locationInputs.forEach((input) => {
+/*locationInputs.forEach((input) => {
   input.addEventListener("click", () => {
     console.log(input.value);
   });
-});
+});*/
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -35,6 +36,9 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 function launchModal() {
   modalbg.style.display = "block";
   content.style.display= "block"; 
+  closeValidate ()
+ 
+
 }
 
 // close modal event
@@ -44,82 +48,200 @@ closeModal.addEventListener("click", close);
 function close() {
   content.style.display= "none";
   modalbg.style.display="none";
+  
 }
 
 
 
-// validation form
-function validate () {
-  const firstname = document.forms["reserve"]["first"]
-  const lastname = document.forms["reserve"]["last"]
-  const email = document.forms["reserve"]["email"]
-  const birthdate = document.forms["reserve"]["birthdate"]
-  const quantity = document.forms["reserve"]["quantity"]
+// Fonction générique pour afficher un message d'erreur
+function showError(element, errorMessage, errorId) {
+  const errorExist = document.getElementById(errorId);
+  if (!errorExist) {
+    let newP = document.createElement('p');
+    newP.textContent = errorMessage;
+    newP.style.color = "red";
+    newP.style.fontSize = '12px';
+    if (!element.style.border) { // Vérifie si la bordure n'est pas déjà définie
+      element.style.border='2px red solid';
+    }
+    newP.id = errorId;
+    element.parentNode.insertAdjacentHTML('afterend', newP.outerHTML);
+    newP.classList.add('error-message');
+  }
+}
 
-  //Retrieve the "location" input which is checked (if there is one)
-  const locationChecked = document.querySelector('input[name="location"]:checked');
-  // acceptation the terms of use.
-  const accept= document.querySelector('input[id="checkbox1"]:checked')
-  
-  
+// Fonction générique pour masquer un message d'erreur
+function hideError(element, errorId) {
+  const errorExist = document.getElementById(errorId);
+  if (errorExist) {
+    errorExist.remove();
+    element.style.border = ''; // Supprime l'effet de bordure rouge
+  }
+}
 
-  if (!/^[a-zA-Z]{2,}$/.test(firstname.value.trim()) ) {
-    alert ('Veuillez entrer 2 caractères ou plus pour le champ du prénom');
-    firstname.focus();
-    return false;  
-  }
-  
-  if (!/^[a-zA-Z]{2,}$/.test(lastname.value.trim()) ) { 
-    alert('Veuillez entrer 2 caractères ou plus pour le champ du nom'); 
-    lastname.focus();        
+// First name verification
+function firstname() {
+  const firstname = document.forms["reserve"]["first"];
+  const errorId = 'error-firstname';
+  if (!/^[a-zA-Z]{2,}$/.test(firstname.value.trim())) {
+    showError(firstname, 'Veuillez entrer 2 caractères ou plus pour le champ du prénom', errorId);
     return false;
+  } else {
+    hideError(firstname, errorId);
+    return true;
   }
   
-  if ( !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) ) {
-    alert("Mettez une adresse email valide."); 
-    email.focus(); 
-    return false;     
+}
+
+// Last name verification
+function lastname() {
+  const lastname = document.forms["reserve"]["last"];
+  const errorId = 'error-lastname';
+  if (!/^[a-zA-Z]{2,}$/.test(lastname.value.trim())) {
+    showError(lastname, 'Veuillez entrer 2 caractères ou plus pour le champ du nom', errorId);
+    return false;
+  } else {
+    hideError(lastname, errorId);
+    return true;
+  }
+}
+
+
+// Email verification
+function email() {
+  const email = document.forms["reserve"]["email"];
+  const errorId = 'error-email';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+    showError(email, 'Mettez une adresse email valide.', errorId);
+    return false;
+  } else {
+    hideError(email, errorId);
+    return true;
+  }
+}
+
+// birthdate verifcation
+
+function birthdate() {
+  const birthdate = document.forms["reserve"]["birthdate"];
+  const errorId = 'error-birthdate';
+
+  // Vérifier si la date est vide
+  if (birthdate.value.trim() === '') {
+    showError(birthdate, 'Veuillez entrer votre date de naissance.', errorId);
+    return false;
   }
 
- 
-  
-  if (!/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.test(birthdate.value)) {
+  // Vérifier si le format de date est correct
+  const dateArray = birthdate.value.split('-'); // Date au format "aaaa-mm-jj"
+  const day = parseInt(dateArray[2]);
+  const month = parseInt(dateArray[1]) - 1; // Mois commence à partir de 0 dans les objets Date de JavaScript
+  const year = parseInt(dateArray[0]);
 
-    alert("Vous devez entrer votre date de naissance."); 
-    birthdate.focus();        
+  // Vérifier si la date est valide
+  const dateObject = new Date(year, month, day);
+  const formattedDate = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`; // Format "aaaa-mm-jj"
+  const currentDate = new Date();
+  const minYear = 1900; // Année minimale autorisée
+  const maxYear = currentDate.getFullYear(); // Année maximale autorisée
+  if (formattedDate !== birthdate.value || dateObject > currentDate || year < minYear || year > maxYear) {
+    showError(birthdate, `Veuillez entrer une date de naissance valide au format aaaa-mm-jj et comprise entre ${minYear} et ${maxYear}.`, errorId);
     return false;
+  } else {
+    hideError(birthdate, errorId);
+    return true;
   }
-  
-  if ( quantity.value=='' || 99 < quantity.value || quantity.value < 0  ) {
-    alert("Mettez un chiffre entre 0 et 99."); 
-    quantity.focus();        
+}
+
+// quantity verification
+function quantity() {
+  const quantity = document.forms["reserve"]["quantity"];
+  const errorId = 'error-quantity';
+  if (quantity.value === '' || 99 < quantity.value || quantity.value < 0)  {
+    showError(quantity, 'Mettez un chiffre entre 0 et 99.', errorId);
     return false;
+  } else {
+    hideError(quantity, errorId);
+    return true;
   }
-  
-  if (!locationChecked) {   
-    alert("Vous devez choisir une option."); 
-    return false;
-  }
-  if (!accept){
-    alert ("Vous devez vérifier que vous acceptez les termes et conditions'")
-    return false;
-  }
-   
-  return true ;
- 
 }
 
 
 
+//btn radio
+
+function locationChecked() {
+  const locationInputs = document.querySelectorAll('input[name="location"]');
+  return Array.from(locationInputs).some((input) => input.checked);
+  
+}
+
+function validateLocation() {
+  const errorId = 'error-location';
+  const errorElement = document.getElementById(errorId);
+
+  if (!locationChecked()) {
+    if (!errorElement) { // Vérifier si le message d'erreur n'est pas déjà présent
+      const newP = document.createElement('p');
+      newP.textContent = 'Vous devez choisir une option.';
+      newP.style.color = "red";
+      newP.style.fontSize = '12px';
+      newP.id = errorId; // Ajouter un ID à l'élément pour le retrouver facilement
+      document.querySelector('#checkbox1').insertAdjacentElement('afterend', newP);
+    }
+    return false;
+  } else {
+    if (errorElement) {
+      errorElement.remove(); // Supprimer le message d'erreur s'il existe
+    }
+    
+    return true;
+  }
+}
+
+
+let errorPresent = false; // Variable pour suivre l'état de l'erreur
+
+function accept() {
+  const acceptCheckbox = document.querySelector('input[id="checkbox1"]');
+  const errorId = 'error-acceptCheckbox';
+
+  if (!acceptCheckbox.checked && !errorPresent) { // Vérifier si la case n'est pas cochée et si l'erreur n'est pas déjà présente
+    errorPresent = true; // Mettre à jour l'état de l'erreur
+    const newP = document.createElement('p');
+    newP.textContent = 'Vous devez vérifier que vous acceptez les termes et conditions';
+    newP.style.color = "red";
+    newP.style.fontSize = '12px';
+    newP.id = errorId; // Ajouter un ID à l'élément pour le retrouver facilement
+    document.querySelector('#checkbox2').insertAdjacentElement('beforebegin', newP);
+    return false;
+  } else if (acceptCheckbox.checked && errorPresent) { // Vérifier si la case est cochée et si l'erreur est présente
+    errorPresent = false; // Mettre à jour l'état de l'erreur
+    const errorElement = document.getElementById(errorId);
+    if (errorElement) {
+      errorElement.remove(); // Supprimer le message d'erreur s'il existe
+    }
+  }
+  return acceptCheckbox.checked;
+}
 
 
 
-function result (event) {
-  if (validate ()==true){
+let newP = document.createElement('p');
 
-//make window modal black
+
+function validate(event) {
+  if ( /*firstname() && lastname() && email() && birthdate() && quantity() &&  validateLocation() &&  */accept() ) {
+
+
+
+
+        
+      //make window modal black
 const erase1=document.querySelectorAll('.text-control')
 const erase2=document.querySelectorAll('label')
+
+
 
 erase1.forEach((element)=>element.style.opacity= "0")
 for (const erase of  erase2 ) {
@@ -133,21 +255,54 @@ for (const erase of  erase2 ) {
 // text :"" Merci pour votre inscription"
 let b = document.body;
 let p1 = document.getElementById('email');
+let p2=document.getElementById('birthdate')
 let newP = document.createElement('p');
+newP.id = 'newP'
 
-newP.textContent = 'Merci pour votre inscription';
+newP.textContent = 'votre inscription ';
 newP.style.textAlign="center";
 
 p1.insertAdjacentElement('afterend', newP)
 
-event.preventDefault()
 
-}
+
+ const newP2=document.createElement('p')
+newP2.textContent='Merci pour'
+newP2.style.textAlign="center";
+
+p1.insertAdjacentElement('afterend', newP2)
+
+
+event.preventDefault()
+   
+     return true
+  } else {
+    return false;
+  }
 }
 
 
 const btnSubmit =document.querySelector('.btn-submit')
-btnSubmit.addEventListener("click", result);
+btnSubmit.addEventListener("click", validate);
+
+
+
+function closeValidate () {
+  const erase1=document.querySelectorAll('.text-control')
+  const erase2=document.querySelectorAll('label')
+    erase1.forEach((element)=>element.style.opacity= "1")
+for (const erase of  erase2 ) {
+  console.log(erase.style.opacity="1")
+ }
+
+ const newP = document.getElementById('newP');
+ newP.remove();
+ const form= document.querySelector('form')
+ form.reset()
+}
+
+
+
 
 
 
