@@ -22,12 +22,7 @@ const input = document.querySelector('input')
 const locationInputs = document.querySelectorAll('input[name="location"]');
 console.log(locationInputs)
 
-// listen to the event on the radio-type input checkbox
-/*locationInputs.forEach((input) => {
-  input.addEventListener("click", () => {
-    console.log(input.value);
-  });
-});*/
+
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -199,7 +194,7 @@ function validateLocation() {
   }
 }
 
-
+// checkbox "conditions d'utilisation"
 let errorPresent = false; // Variable pour suivre l'état de l'erreur
 
 function accept() {
@@ -231,17 +226,11 @@ let newP = document.createElement('p');
 
 
 function validate(event) {
-  if ( /*firstname() && lastname() && email() && birthdate() && quantity() &&  validateLocation() &&  */accept() ) {
+  if ( firstname() && lastname() && email() && birthdate() && quantity() &&  validateLocation() && accept() ) {
 
-
-
-
-        
       //make window modal black
 const erase1=document.querySelectorAll('.text-control')
 const erase2=document.querySelectorAll('label')
-
-
 
 erase1.forEach((element)=>element.style.opacity= "0")
 for (const erase of  erase2 ) {
@@ -258,20 +247,16 @@ let p1 = document.getElementById('email');
 let p2=document.getElementById('birthdate')
 let newP = document.createElement('p');
 newP.id = 'newP'
-
+// 'votre inscription'
 newP.textContent = 'votre inscription ';
 newP.style.textAlign="center";
-
 p1.insertAdjacentElement('afterend', newP)
 
-
-
+// 'Merci pour'
  const newP2=document.createElement('p')
 newP2.textContent='Merci pour'
 newP2.style.textAlign="center";
-
 p1.insertAdjacentElement('afterend', newP2)
-
 
 event.preventDefault()
    
@@ -286,7 +271,8 @@ const btnSubmit =document.querySelector('.btn-submit')
 btnSubmit.addEventListener("click", validate);
 
 
-
+// fermeture avec la croix apres validation du formulaire:
+//remise a zero lorsque l'on lance la fenetre modal apres validation du formulaire.
 function closeValidate () {
   const erase1=document.querySelectorAll('.text-control')
   const erase2=document.querySelectorAll('label')
