@@ -226,7 +226,7 @@ let newP = document.createElement('p');
 
 
 function validate(event) {
-  if ( firstname() && lastname() && email() && birthdate() && quantity() &&  validateLocation() && accept() ) {
+  if ( firstname() /*&& lastname() && email() && birthdate() && quantity() &&  validateLocation() && accept() */) {
 
       //make window modal black
 const erase1=document.querySelectorAll('.text-control')
@@ -256,6 +256,7 @@ p1.insertAdjacentElement('afterend', newP)
  const newP2=document.createElement('p')
 newP2.textContent='Merci pour'
 newP2.style.textAlign="center";
+newP2.id = 'newP2'
 p1.insertAdjacentElement('afterend', newP2)
 
 event.preventDefault()
@@ -282,15 +283,23 @@ for (const erase of  erase2 ) {
  }
 
  const newP = document.getElementById('newP');
- newP.remove();
+
+ if (newP) {
+   newP.remove();
+ }
+
+ const newP2 = document.getElementById('newP2');
+if (newP2) {
+  newP2.remove();
+}
  const form= document.querySelector('form')
  form.reset()
+ 
+// réinitialiser le bouton
+
+const transformText = document.querySelector('input[value="supprimer"]');
+if (transformText) {
+  transformText.setAttribute("value", "C'est parti");
+  console.log(transformText)
 }
-
-
-
-
-
-
-
-
+}
