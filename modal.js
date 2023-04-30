@@ -226,7 +226,7 @@ let newP = document.createElement('p');
 
 
 function validate(event) {
-  if ( firstname() /*&& lastname() && email() && birthdate() && quantity() &&  validateLocation() && accept() */) {
+  if ( firstname() && lastname() && email() && birthdate() && quantity() &&  validateLocation() && accept() ) {
 
       //make window modal black
 const erase1=document.querySelectorAll('.text-control')
@@ -294,7 +294,7 @@ if (newP2) {
 }
  const form= document.querySelector('form')
  form.reset()
- 
+
 // réinitialiser le bouton
 
 const transformText = document.querySelector('input[value="supprimer"]');
